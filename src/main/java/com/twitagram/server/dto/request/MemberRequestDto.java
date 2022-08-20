@@ -14,9 +14,9 @@ public class MemberRequestDto {
     @NotBlank
     private String username;
 
-    @NotBlank
+//    @NotBlank
     private String email;
 
-    @NotBlank
+//    @NotBlank
     private String password;
 }

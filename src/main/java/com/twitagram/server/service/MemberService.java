@@ -28,11 +28,11 @@ public class MemberService {
             return ResponseDto.fail("400","Already existing email.");
         }
         //“Please write proper email address to email field.”
-        if (requestDto.getEmail().isEmpty()){
+        if (requestDto.getEmail().isBlank()){
             return ResponseDto.fail("400","Please write proper email address to email field.");
         }
         //“Please write proper password to Password field.”
-        if (requestDto.getPassword().isEmpty()){
+        if (requestDto.getPassword().isBlank()){
             return ResponseDto.fail("400","Please write proper password to Password field.");
         }
 
