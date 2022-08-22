@@ -28,10 +28,14 @@ public class CommentController {
         return commentService.getComments(id, pageNum, pageLimit, request);
     }
 
-//    @RequestMapping(value = "/api/comments/", method = RequestMethod.GET)
-//    public ResponseDto<?> getComments(@RequestParam int postId, @RequestParam int pageNum, @RequestParam int pageLimit) {
-//        return commentService.getComments(postId, pageNum, pageLimit);
-//    }
+    @PutMapping(value = "/api/comment/{id}")
+    public ResponseDto<?> updateComment(@PathVariable int id,
+                                        @RequestBody CommentRequestDto requestDto,
+                                        HttpServletRequest request){
+        return commentService.updateComment(id,requestDto,request);
+    }
+
+
 //
 //    @RequestMapping(value = "/api/comment/{id}", method = RequestMethod.PUT)
 //    public ResponseDto<?> updateComment(@PathVariable int id, @RequestBody CommentRequestDto requestDto) {

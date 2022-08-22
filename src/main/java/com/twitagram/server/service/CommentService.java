@@ -68,19 +68,20 @@ public class CommentService {
         }
         return tokenProvider.getMemberFromAuthentication();
     }
+
     @Transactional
-    public ResponseDto<?> getComments(Integer id, Integer pageNum, Integer pageLimit, HttpServletRequest request){
+    public ResponseDto<?> getComments(Integer id, Integer pageNum, Integer pageLimit, HttpServletRequest request) {
         Post post = isPresentPost(id);
-        if (post == null){
-            return ResponseDto.fail("400","Fail to get comments. Wrong page number");
+        if (post == null) {
+            return ResponseDto.fail("400", "Fail to get comments. Wrong page number");
         }
 
-        Pageable pageable = PageRequest.of(pageNum,pageLimit);
-        List<Comment> commentList = commentRepository.findAllByPost(post,pageable);
+        Pageable pageable = PageRequest.of(pageNum, pageLimit);
+        List<Comment> commentList = commentRepository.findAllByPost(post, pageable);
         List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
 
-        if(null == request.getHeader("Authorization")){
-            for (Comment comments : commentList){
+        if (null == request.getHeader("Authorization")) {
+            for (Comment comments : commentList) {
                 commentResponseDtoList.add(
                         CommentResponseDto.builder()
                                 .id(comments.getId())
@@ -91,10 +92,10 @@ public class CommentService {
                                 .build()
                 );
             }
-            return ResponseDto.success(commentResponseDtoList,"200","Successfully get comments.");
+            return ResponseDto.success(commentResponseDtoList, "200", "Successfully get comments.");
         }
         Member member = validateMember(request);
-        for (Comment comments : commentList){
+        for (Comment comments : commentList) {
             commentResponseDtoList.add(
                     CommentResponseDto.builder()
                             .id(comments.getId())
@@ -104,19 +105,48 @@ public class CommentService {
                             .Ismine(comments.getMember().getUsername().equals(member.getUsername())).build()
             );
         }
-        return ResponseDto.success(commentResponseDtoList,"200","Successfully get comments.");
+        return ResponseDto.success(commentResponseDtoList, "200", "Successfully get comments.");
     }
+
     @Transactional(readOnly = true)
     public Post isPresentPost(int id) {
         Optional<Post> optionalPost = postRepository.findById(id);
         return optionalPost.orElse(null);
     }
 
+    @Transactional
+    public ResponseDto<?> updateComment(int id, CommentRequestDto requestDto, HttpServletRequest request) {
+        if (request.getHeader("Authorization") == null) {
+            return ResponseDto.fail("400", "AccessToken.");
+        }
+        Member member = validateMember(request);
+        if (null == member){
+            return ResponseDto.fail("400","Member");
+        }
+        Comment comment = isPresentComment(id);
+        if (null == comment){
+            return ResponseDto.fail("400","Already deleted comment.");
+        }
+        if (comment.validateMember(member)){
+            return ResponseDto.fail("400","Modified Author Only");
+        }
+        comment.update(requestDto);
+        return ResponseDto.success(
+                CommentResponseDto.builder()
+                        .id(comment.getId())
+                        .username(member.getUsername())
+                        .userprofile(member.getUserprofile())
+                        .content(comment.getContent())
+                        .Ismine(comment.getMember().getUsername().equals(member.getUsername()))
+                        .build(),"200","Successfully edited comment."
+        );
+    }
 
-//    @Transactional
-//    public ResponseDto<?> updateComment(int commentId, CommentRequestDto requestDto) {
-//
-//    }
+    @Transactional(readOnly = true)
+    public Comment isPresentComment(int id) {
+        Optional<Comment> optionalComment = commentRepository.findById(id);
+        return optionalComment.orElse(null);
+    }
 
 //    @Transactional
 //    public ResponseDto<?> deleteComment(int commentId) {
