@@ -92,9 +92,9 @@ public class MemberService {
     }
 
     public ResponseDto<?> logout(HttpServletRequest request) {
-        if (!tokenProvider.validateToken(request.getHeader("RefreshToken"))) {
-            return ResponseDto.fail("403", "Token is not valid");
-        }
+//        if (!tokenProvider.validateToken(request.getHeader("RefreshToken"))) {
+//            return ResponseDto.fail("403", "Token is not valid");
+//        }
         Member member = tokenProvider.getMemberFromAuthentication();
         if (null == member) {
             return ResponseDto.fail("400",
@@ -107,7 +107,7 @@ public class MemberService {
 
     public void tokenToHeaders(TokenDto tokenDto, HttpServletResponse response) {
         response.addHeader("Authorization", "Bearer " + tokenDto.getAccessToken());
-        response.addHeader("RefreshToken", tokenDto.getRefreshToken());
+//        response.addHeader("RefreshToken", tokenDto.getRefreshToken());
         response.addHeader("Access-Token-Expire-Time", tokenDto.getAccessTokenExpiresIn().toString());
     }
 
