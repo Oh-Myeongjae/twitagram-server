@@ -10,12 +10,12 @@ public class ResponseDto<T> {
     private T output;
     private Error status;
 
-    public static <T> ResponseDto<T> success(T output) {
-        return new ResponseDto<>(true, output, null);
+    public static <T> ResponseDto<T> success(T output, String code, String message) {
+        return new ResponseDto<>(true, output, new Error(code, message));
     }
 
     public static <T> ResponseDto<T> fail(String code, String message) {
-        return new ResponseDto<>(false, null , new Error(code, message));
+        return new ResponseDto<>(false, null, new Error(code, message));
     }
 
     @Getter
