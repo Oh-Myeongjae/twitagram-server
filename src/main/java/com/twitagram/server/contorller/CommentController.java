@@ -21,7 +21,12 @@ public class CommentController {
         return commentService.createComment(requestDto, id, request);
     }
 
-//    @GetMapping("/api/comment/")
+    @GetMapping("/api/comment/{id}")
+    public ResponseDto<?> getComments(@PathVariable int id, @RequestParam("pageNum") Integer pageNum,
+                                      @RequestParam(value = "pageLimit",defaultValue = "5") Integer pageLimit,
+                                      HttpServletRequest request){
+        return commentService.getComments(id, pageNum, pageLimit, request);
+    }
 
 //    @RequestMapping(value = "/api/comments/", method = RequestMethod.GET)
 //    public ResponseDto<?> getComments(@RequestParam int postId, @RequestParam int pageNum, @RequestParam int pageLimit) {
