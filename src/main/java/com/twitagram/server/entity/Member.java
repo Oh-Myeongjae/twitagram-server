@@ -1,6 +1,7 @@
 package com.twitagram.server.entity;
 
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 
