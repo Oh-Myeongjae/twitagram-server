@@ -8,6 +8,7 @@ import com.twitagram.server.entity.Member;
 import com.twitagram.server.repository.MemberRepository;
 import com.twitagram.server.utils.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
+
+    private final PasswordEncoder passwordEncoder;
 
     //회원가입
     @Transactional
@@ -45,7 +48,7 @@ public class MemberService {
         Member member = Member.builder()
                 .username(requestDto.getUsername())
                 .email(requestDto.getEmail())
-                .password(requestDto.getPassword())
+                .password(passwordEncoder.encode(requestDto.getPassword()))
                 .userprofile("https://joeschmoe.io/api/v1/" + requestDto.getUsername())
                 .build();
 
@@ -63,11 +66,11 @@ public class MemberService {
         Optional<Member> optionalMember = memberRepository.findByEmail(email);
         return optionalMember.orElse(null);
     }
-    @Transactional(readOnly = true)
-    public Member isPresentMemberByPassword(String password) {
-        Optional<Member> optionalMember = memberRepository.findByPassword(password);
-        return optionalMember.orElse(null);
-    }
+//    @Transactional(readOnly = true)
+//    public Member isPresentMemberByPassword(String password) {
+//        Optional<Member> optionalMember = memberRepository.findByPassword(password);
+//        return optionalMember.orElse(null);
+//    }
 
     @Transactional
     public ResponseDto<?> login(LoginRequestDto requestDto, HttpServletResponse response) {
@@ -75,7 +78,10 @@ public class MemberService {
         if (null == member) {
             return ResponseDto.fail("400", "Not existing email or wrong password");
         }
-        if (null == isPresentMemberByPassword(requestDto.getPassword())){
+//        if (null == isPresentMemberByPassword(requestDto.getPassword())){
+//            return ResponseDto.fail("400", "Not existing email or wrong password");
+//        }
+        if (!member.validatePassword(passwordEncoder, requestDto.getPassword())) {
             return ResponseDto.fail("400", "Not existing email or wrong password");
         }
 

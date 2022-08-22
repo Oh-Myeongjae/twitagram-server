@@ -1,6 +1,7 @@
 package com.twitagram.server.entity;
 
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 
@@ -26,5 +27,9 @@ public class Member {
 
     @Column(nullable = false)
     private String userprofile;
+
+    public boolean validatePassword(PasswordEncoder passwordEncoder, String password) {
+        return passwordEncoder.matches(password, this.password);
+    }
 
 }
