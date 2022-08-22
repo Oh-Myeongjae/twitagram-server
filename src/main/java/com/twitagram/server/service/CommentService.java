@@ -149,13 +149,23 @@ public class CommentService {
         return optionalComment.orElse(null);
     }
 
-//    @Transactional
-//    public ResponseDto<?> deleteComment(int commentId) {
-//        if(commentRepository.existsById(commentId)) {
-//            return ResponseDto.fail("400", "Already deleted post");
-//        }
-//        commentRepository.deleteById(commentId);
-//        return ResponseDto.success(null, "200", "Successfully deleted comment");
-//    }
-
+    @Transactional
+    public ResponseDto<?> deleteComment(int id, HttpServletRequest request){
+        if (request.getHeader("Authorization") == null) {
+            return ResponseDto.fail("400", "AccessToken.");
+        }
+        Member member = validateMember(request);
+        if (null == member){
+            return ResponseDto.fail("400","Member");
+        }
+        Comment comment = isPresentComment(id);
+        if (null == comment){
+            return ResponseDto.fail("400","Already deleted comment.");
+        }
+        if (comment.validateMember(member)){
+            return ResponseDto.fail("400","Modified Author Only");
+        }
+        commentRepository.delete(comment);
+        return ResponseDto.success(null,"200","Successfully deleted comment.");
+    }
 }
