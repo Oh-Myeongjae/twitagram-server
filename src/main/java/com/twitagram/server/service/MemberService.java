@@ -8,7 +8,6 @@ import com.twitagram.server.entity.Member;
 import com.twitagram.server.repository.MemberRepository;
 import com.twitagram.server.utils.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +20,6 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-
-    private final PasswordEncoder passwordEncoder;
-
     private final TokenProvider tokenProvider;
 
     //회원가입
@@ -80,12 +76,8 @@ public class MemberService {
             return ResponseDto.fail("400", "Not existing email or wrong password");
         }
         if (null == isPresentMemberByPassword(requestDto.getPassword())){
-            return ResponseDto.fail("400", "wrong password");
+            return ResponseDto.fail("400", "Not existing email or wrong password");
         }
-
-//        if (!member.validatePassword(passwordEncoder, requestDto.getPassword())) {
-//            return ResponseDto.fail("400", "wrong password");
-//        }
 
         TokenDto tokenDto = tokenProvider.generateTokenDto(member);
         tokenToHeaders(tokenDto, response);
