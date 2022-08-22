@@ -78,34 +78,35 @@ public class CommentService {
 
         Pageable pageable = PageRequest.of(pageNum, pageLimit);
         List<Comment> commentList = commentRepository.findAllByPost(post, pageable);
-        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+        List<CommentResponseDto> comments = new ArrayList<>();
 
         if (null == request.getHeader("Authorization")) {
-            for (Comment comments : commentList) {
-                commentResponseDtoList.add(
+            for (Comment comment : commentList) {
+                comments.add(
                         CommentResponseDto.builder()
-                                .id(comments.getId())
-                                .username(comments.getMember().getUsername())
-                                .userprofile(comments.getMember().getUserprofile())
-                                .content(comments.getContent())
+                                .id(comment.getId())
+                                .username(comment.getMember().getUsername())
+                                .userprofile(comment.getMember().getUserprofile())
+                                .content(comment.getContent())
                                 .Ismine(false)
                                 .build()
                 );
             }
-            return ResponseDto.success(commentResponseDtoList, "200", "Successfully get comments.");
+            return ResponseDto.success(comments, "200", "Successfully get comments.");
         }
         Member member = validateMember(request);
-        for (Comment comments : commentList) {
-            commentResponseDtoList.add(
+        for (Comment comment : commentList) {
+            comments.add(
                     CommentResponseDto.builder()
-                            .id(comments.getId())
-                            .username(comments.getMember().getUsername())
-                            .userprofile(comments.getMember().getUserprofile())
-                            .content(comments.getContent())
-                            .Ismine(comments.getMember().getUsername().equals(member.getUsername())).build()
+                            .id(comment.getId())
+                            .username(comment.getMember().getUsername())
+                            .userprofile(comment.getMember().getUserprofile())
+                            .content(comment.getContent())
+                            .Ismine(comment.getMember().getUsername().equals(member.getUsername()))
+                            .build()
             );
         }
-        return ResponseDto.success(commentResponseDtoList, "200", "Successfully get comments.");
+        return ResponseDto.success(comments, "200", "Successfully get comments.");
     }
 
     @Transactional(readOnly = true)
