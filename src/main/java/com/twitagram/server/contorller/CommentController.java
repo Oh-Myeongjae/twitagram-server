@@ -21,7 +21,7 @@ public class CommentController {
         return commentService.createComment(requestDto, id, request);
     }
 
-    @GetMapping("/api/comment/{id}")
+    @GetMapping("/api/comments/{id}")
     public ResponseDto<?> getComments(@PathVariable int id, @RequestParam("pageNum") Integer pageNum,
                                       @RequestParam(value = "pageLimit", defaultValue = "5") Integer pageLimit,
                                       HttpServletRequest request) {
