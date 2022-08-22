@@ -22,6 +22,6 @@ public class PostController {
         // ModelAtrribute 사용시 Request에 Setter를 추가해주거나 모든 필드를 요소를 받는 생성자를 만들면 된다.@AllArgsConstructor
         //  https://minchul-son.tistory.com/546
         postService.createPost(postRequestDto);
-        return ResponseDto.success("성공했습니다.");
+        return ResponseDto.success(null,"200","Successfully created new post");
     }
 }
