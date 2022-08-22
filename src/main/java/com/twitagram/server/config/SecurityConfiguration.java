@@ -36,6 +36,8 @@ public class SecurityConfiguration {
     private static final String[] PERMIT_URL_ARRAY = {
             "/api/signup",
             "/api/login",
+            "/api/**",
+            "/api/*",
             "/h2-console/**"
     };
 
