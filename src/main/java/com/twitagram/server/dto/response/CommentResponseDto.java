@@ -14,5 +14,5 @@ public class CommentResponseDto {
     private String username;
     private String userprofile;
     private String content;
-    private Boolean Ismine;
+    private boolean Ismine;
 }
