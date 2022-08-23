@@ -1,5 +1,6 @@
 package com.twitagram.server.entity;
 
+import com.twitagram.server.dto.request.PostRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,16 +27,18 @@ public class Post extends Timestamped{
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-//    //좋아요
-//    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-//    private List<PostLike> postLikeList;
+    public void update(PostRequestDto postRequestDto, Member member){
+        this.content = postRequestDto.getContent();
+        this.member = member;
+    }
 
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Likes> postLikeList;
 
-//    public void update(PostRequestDto postRequestDto, String imageUrl, Member member){
-//        this.title = postRequestDto.getTitle();
-//        this.content = postRequestDto.getContent();
-//        this.imageUrl = imageUrl;
-//        this.member = member;
-//    }
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Hashtags> hashtagsList;
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> imageList;
 
 }
