@@ -210,4 +210,9 @@ public class PostService {
         postRepository.delete(post);
         return ResponseDto.success(null,"200","게시글 삭제 성공");
     }
+    @Transactional(readOnly = true)
+    public Post isPresentPost(Integer id) {
+        Optional<Post> optionalPost = postRepository.findById(id);
+        return optionalPost.orElse(null);
+    }
 }
