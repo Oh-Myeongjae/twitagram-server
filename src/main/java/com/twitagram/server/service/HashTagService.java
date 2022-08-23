@@ -34,8 +34,8 @@ public class HashTagService {
 
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> getPostByHashTag(String tags, int page, int limit, String sortBy, UserDetails userDetails) {
-        Optional<Hashtags> tagCheck = hashtagRepository.findHashtagsByTags(tags);
+    public ResponseDto<?> getPostByHashTag(String tag, int page, int limit, String sortBy, UserDetails userDetails) {
+        Optional<Hashtags> tagCheck = hashtagRepository.findHashtagsByTags(tag);
         if (tagCheck.isEmpty()) {
             return ResponseDto.fail("400", "Wrong Tag");
         }
