@@ -7,6 +7,7 @@ import com.twitagram.server.dto.response.ResponseDto;
 import com.twitagram.server.entity.*;
 import com.twitagram.server.repository.*;
 import com.twitagram.server.utils.aws.S3upload;
+import com.twitagram.server.utils.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,7 +42,6 @@ public class PostService {
 
     @Transactional
     public void createPost(PostRequestDto postRequestDto, UserDetails user) throws IOException {
-
         List<MultipartFile> FileList = postRequestDto.getImagefiles();
         List<String> tags = postRequestDto.getHashtags();
         Optional<Member> author = memberRepository.findByUsername(user.getUsername());
@@ -95,7 +95,6 @@ public class PostService {
             int LikeCount = likesRepository.countAllByPost_Id(post.getId());
             Optional<Member> member = memberRepository.findByUsername(user.getUsername());
             Likes LikeCheck = likesRepository.findByMember_Id(member.get().getId());
-//            System.out.println("LikeCount = " + LikeCheck.getId());
             for(Hashtags s :  hashtagsList){
                 Tags.add(s.getTags());
             }
@@ -129,5 +128,86 @@ public class PostService {
                 .build();
 //        return ResponseDto.success(pageDto);
         return ResponseDto.success(pageDto,"200","게시글 전체 조회");
+    }
+
+    @Transactional
+    public ResponseDto<?> updatePost(int postId, PostRequestDto postRequestDto, UserDetails user) throws IOException {
+        Optional<Member> member = memberRepository.findByUsername(user.getUsername());
+        Optional<Post> optionalPost =  postRepository.findById(postId);
+
+        if(optionalPost.isEmpty()){
+            return ResponseDto.fail("에러코드~~","존재하지 않는 게시글");
+        }
+        Post post = optionalPost.get();
+
+        post.update(postRequestDto,member.get());
+
+        List<Image> imageList = imageRepository.findAllByPost_Id(post.getId());
+        List<Hashtags>  hashtagsList = hashtagRepository.findAllByPost_Id(post.getId());
+
+        List<String> URLS = new ArrayList<String>();
+        List<String> Tags = new ArrayList<String>();
+
+        int LikeCount = likesRepository.countAllByPost_Id(post.getId());
+        Likes LikeCheck = likesRepository.findByMember_Id(member.get().getId());
+        for(Hashtags s :  hashtagsList){
+            Tags.add(s.getTags());
+        }
+        for(Image s :  imageList){
+            URLS.add(s.getImageurls());
+        }
+        String time = post.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+
+        int followCount = followRepository.countByMember_IdAndFollow_Id(member.get().getId(),post.getMember().getId());
+
+        PostResponseDto pageDto = PostResponseDto.builder()
+                        .id(post.getId())
+                        .username(post.getMember().getUsername())
+                        .userprofile(post.getMember().getUserprofile())
+                        .content(post.getContent())
+                        .imageurls(URLS)
+                        .hashtags(Tags)
+                        .Ismine(Objects.equals(post.getMember().getUsername(), user.getUsername()))
+                        .time(time)
+                        .Isliked(LikeCheck != null)
+                        .Isfollowing(followCount != 0)
+//                       .numcomments()
+                        .numlikes(LikeCount)
+                        .build();
+        return ResponseDto.success(pageDto,"200","성공적으로 수정되었습니다.");
+    }
+
+    public ResponseDto<?> likePost(int postId, UserDetails user) {
+        Optional<Member> member = memberRepository.findByUsername(user.getUsername());
+        Optional<Post> optionalPost =  postRepository.findById(postId);
+
+        if(optionalPost.isEmpty()){
+            return ResponseDto.fail("에러코드~~","존재하지 않는 게시글");
+        }
+        Post post = optionalPost.get();
+        likesRepository.save(Likes.builder()
+                .member(member.get())
+                .post(post)
+                .build()
+        );
+        return ResponseDto.success(null,"200","Successfully liked the post.");
+    }
+
+    public ResponseDto<?> unlikePost(int postId) {
+        Likes likes = likesRepository.findByPost_id(postId);
+        likesRepository.delete(likes);
+        return ResponseDto.success(null,"200","Successfully unliked the post.");
+    }
+
+    public ResponseDto<?> deletePost(int postId, UserDetails user) {
+        Optional<Post> optionalPost =  postRepository.findById(postId);
+
+        if(optionalPost.isEmpty()){
+            return ResponseDto.fail("에러코드~~","존재하지 않는 게시글");
+        }
+
+        Post post = optionalPost.get();
+        postRepository.delete(post);
+        return ResponseDto.success(null,"200","게시글 삭제 성공");
     }
 }

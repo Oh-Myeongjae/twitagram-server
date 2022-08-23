@@ -12,6 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 public class PostRequestDto {
     private String content;
-    private List<MultipartFile> imagefiles;
     private List<String> hashtags;
+    private List<MultipartFile> imagefiles;
 }
