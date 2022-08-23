@@ -13,10 +13,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostResponseDto {
-    private Long id;
-    private String title;
+    private int id;
+    private String username;
+    private String userprofile;
     private String content;
-    private String imageUrl;
-    private LocalDateTime createAt;
-    private LocalDateTime modifiedAt;
+    private List<String> imageurls;
+    private List<String> hashtags;
+    private boolean Ismine;
+    private boolean Isliked;
+    private boolean Isfollowing;
+    private int numcomments;
+    private int numlikes;
+    private String time;
 }
