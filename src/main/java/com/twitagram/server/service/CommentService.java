@@ -1,6 +1,7 @@
 package com.twitagram.server.service;
 
 import com.twitagram.server.dto.request.CommentRequestDto;
+import com.twitagram.server.dto.response.CommentPageDto;
 import com.twitagram.server.dto.response.CommentResponseDto;
 import com.twitagram.server.dto.response.ResponseDto;
 import com.twitagram.server.entity.Comment;
@@ -11,6 +12,7 @@ import com.twitagram.server.repository.MemberRepository;
 import com.twitagram.server.repository.PostRepository;
 import com.twitagram.server.utils.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -146,7 +148,7 @@ public class CommentService {
         }
 
         Pageable pageable = PageRequest.of(pageNum, pageLimit);
-        List<Comment> commentList = commentRepository.findAllByPost(post, pageable);
+        Page<Comment> commentList = commentRepository.findAllByPost(post, pageable);
         List<CommentResponseDto> comments = new ArrayList<>();
 
         Optional<Member> memberCheck = memberRepository.findByUsername(userDetails.getUsername());
@@ -175,7 +177,13 @@ public class CommentService {
                             .build()
             );
         }
-        return ResponseDto.success(comments, "200", "Successfully get comments.");
+        CommentPageDto commentPageDto = CommentPageDto.builder()
+                .currpage(commentList.getNumber()+1)
+                .totalpage(commentList.getTotalPages())
+                .currcontent(commentList.getNumberOfElements())
+                .comments(comments)
+                .build();
+        return ResponseDto.success(commentPageDto, "200", "Successfully get comments.");
     }
 
     @Transactional(readOnly = true)

@@ -38,10 +38,11 @@ public class CommentController {
 //    }
 
     @GetMapping("/api/comments/{id}")
-    public ResponseDto<?> getComments(@PathVariable int id, @RequestParam("pageNum") Integer pageNum,
-                                      @RequestParam(value = "pageLimit", defaultValue = "5") Integer pageLimit,
+    public ResponseDto<?> getComments(@PathVariable int id, @RequestParam("pageNum") int page,
+                                      @RequestParam(value = "pageLimit",defaultValue = "5") int limit,
                                       @AuthenticationPrincipal UserDetails userDetails) {
-        return commentService.getComments(id, pageNum, pageLimit, userDetails);
+        page = page -1;
+        return commentService.getComments(id, page, limit, userDetails);
     }
 
 //    @PutMapping(value = "/api/comment/{id}")
