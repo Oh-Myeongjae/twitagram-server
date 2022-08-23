@@ -23,16 +23,25 @@ public class CommentController {
 //        return commentService.createComment(requestDto, id, request);
 //    }
 
-    @PostMapping("/api/comment/")
-    public ResponseDto<?> createComment(@RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetails userDetails) {
-        return commentService.createComment(requestDto,userDetails);
+    @PostMapping("/api/comment/{id}")
+    public ResponseDto<?> createComment(@PathVariable int id,
+                                        @RequestBody CommentRequestDto requestDto,
+                                        @AuthenticationPrincipal UserDetails userDetails) {
+        return commentService.createComment(id,requestDto,userDetails);
     }
+
+//    @GetMapping("/api/comments/{id}")
+//    public ResponseDto<?> getComments(@PathVariable int id, @RequestParam("pageNum") Integer pageNum,
+//                                      @RequestParam(value = "pageLimit", defaultValue = "5") Integer pageLimit,
+//                                      HttpServletRequest request) {
+//        return commentService.getComments(id, pageNum, pageLimit, request);
+//    }
 
     @GetMapping("/api/comments/{id}")
     public ResponseDto<?> getComments(@PathVariable int id, @RequestParam("pageNum") Integer pageNum,
                                       @RequestParam(value = "pageLimit", defaultValue = "5") Integer pageLimit,
-                                      HttpServletRequest request) {
-        return commentService.getComments(id, pageNum, pageLimit, request);
+                                      @AuthenticationPrincipal UserDetails userDetails) {
+        return commentService.getComments(id, pageNum, pageLimit, userDetails);
     }
 
 //    @PutMapping(value = "/api/comment/{id}")

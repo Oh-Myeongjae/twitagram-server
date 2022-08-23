@@ -28,6 +28,7 @@ import java.util.Optional;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+
     private final TokenProvider tokenProvider;
     private final PostService postService;
     private final PostRepository postRepository;
@@ -66,15 +67,21 @@ public class CommentService {
 //    }
 
     @Transactional
-    public ResponseDto<?> createComment(CommentRequestDto requestDto, UserDetails userDetails) {
+    public ResponseDto<?> createComment(int id, CommentRequestDto requestDto, UserDetails userDetails) {
         System.out.println("Username" + userDetails.getUsername());
         Optional<Member> memberCheck = memberRepository.findByUsername(userDetails.getUsername());
-        if (memberCheck.isEmpty()){
-            return ResponseDto.fail("400","fail");
+        if (memberCheck.isEmpty()) {
+            return ResponseDto.fail("400", "Fail to create new comment.");
+        }
+
+        Post post = postService.isPresentPost(id);
+        if (post == null) {
+            return ResponseDto.fail("400", "Fail to create new comment.");
         }
 
         Comment comment = Comment.builder()
                 .member(memberCheck.get())
+                .post(post)
                 .content(requestDto.getContent())
                 .build();
         commentRepository.save(comment);
@@ -84,16 +91,55 @@ public class CommentService {
         return ResponseDto.success(null, "200", "Successfully created new comment.");
     }
 
-    @Transactional
-    public Member validateMember(HttpServletRequest request) {
-        if (!tokenProvider.validateToken(request.getHeader("RefreshToken"))) {
-            return null;
-        }
-        return tokenProvider.getMemberFromAuthentication();
-    }
+//    @Transactional
+//    public Member validateMember(HttpServletRequest request) {
+//        if (!tokenProvider.validateToken(request.getHeader("RefreshToken"))) {
+//            return null;
+//        }
+//        return tokenProvider.getMemberFromAuthentication();
+//    }
 
+    //    @Transactional
+//    public ResponseDto<?> getComments(int id, Integer pageNum, Integer pageLimit, HttpServletRequest request) {
+//        Post post = isPresentPost(id);
+//        if (post == null) {
+//            return ResponseDto.fail("400", "Fail to get comments. Wrong page number");
+//        }
+//
+//        Pageable pageable = PageRequest.of(pageNum, pageLimit);
+//        List<Comment> commentList = commentRepository.findAllByPost(post, pageable);
+//        List<CommentResponseDto> comments = new ArrayList<>();
+//
+//        if (null == request.getHeader("Authorization")) {
+//            for (Comment comment : commentList) {
+//                comments.add(
+//                        CommentResponseDto.builder()
+//                                .id(comment.getId())
+//                                .username(comment.getMember().getUsername())
+//                                .userprofile(comment.getMember().getUserprofile())
+//                                .content(comment.getContent())
+//                                .Ismine(false)
+//                                .build()
+//                );
+//            }
+//            return ResponseDto.success(comments, "200", "Successfully get comments.");
+//        }
+//        Member member = validateMember(request);
+//        for (Comment comment : commentList) {
+//            comments.add(
+//                    CommentResponseDto.builder()
+//                            .id(comment.getId())
+//                            .username(comment.getMember().getUsername())
+//                            .userprofile(comment.getMember().getUserprofile())
+//                            .content(comment.getContent())
+//                            .Ismine(comment.getMember().getUsername().equals(member.getUsername()))
+//                            .build()
+//            );
+//        }
+//        return ResponseDto.success(comments, "200", "Successfully get comments.");
+//    }
     @Transactional
-    public ResponseDto<?> getComments(Integer id, Integer pageNum, Integer pageLimit, HttpServletRequest request) {
+    public ResponseDto<?> getComments(int id, Integer pageNum, Integer pageLimit, @AuthenticationPrincipal UserDetails userDetails) {
         Post post = isPresentPost(id);
         if (post == null) {
             return ResponseDto.fail("400", "Fail to get comments. Wrong page number");
@@ -103,7 +149,8 @@ public class CommentService {
         List<Comment> commentList = commentRepository.findAllByPost(post, pageable);
         List<CommentResponseDto> comments = new ArrayList<>();
 
-        if (null == request.getHeader("Authorization")) {
+        Optional<Member> memberCheck = memberRepository.findByUsername(userDetails.getUsername());
+        if (memberCheck.isEmpty()) {
             for (Comment comment : commentList) {
                 comments.add(
                         CommentResponseDto.builder()
@@ -117,7 +164,6 @@ public class CommentService {
             }
             return ResponseDto.success(comments, "200", "Successfully get comments.");
         }
-        Member member = validateMember(request);
         for (Comment comment : commentList) {
             comments.add(
                     CommentResponseDto.builder()
@@ -125,7 +171,7 @@ public class CommentService {
                             .username(comment.getMember().getUsername())
                             .userprofile(comment.getMember().getUserprofile())
                             .content(comment.getContent())
-                            .Ismine(comment.getMember().getUsername().equals(member.getUsername()))
+                            .Ismine(comment.getMember().getUsername().equals(memberCheck.get().getUsername()))
                             .build()
             );
         }
@@ -138,7 +184,7 @@ public class CommentService {
         return optionalPost.orElse(null);
     }
 
-//    @Transactional
+    //    @Transactional
 //    public ResponseDto<?> updateComment(int id, CommentRequestDto requestDto, HttpServletRequest request) {
 //        if (request.getHeader("Authorization") == null) {
 //            return ResponseDto.fail("400", "AccessToken.");
@@ -166,19 +212,19 @@ public class CommentService {
 //        );
 //    }
     @Transactional
-    public ResponseDto<?> updateComment(int id,CommentRequestDto requestDto, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseDto<?> updateComment(int id, CommentRequestDto requestDto, @AuthenticationPrincipal UserDetails userDetails) {
         Optional<Member> memberCheck = memberRepository.findByUsername(userDetails.getUsername());
-        if (memberCheck.isEmpty()){
-            return ResponseDto.fail("400","fail");
+        if (memberCheck.isEmpty()) {
+            return ResponseDto.fail("400", "fail");
         }
 
         Comment comment = isPresentComment(id);
-        if (null == comment){
-            return ResponseDto.fail("400","Already deleted comment.");
+        if (null == comment) {
+            return ResponseDto.fail("400", "Already deleted comment.");
         }
 
-        if (!comment.getMember().getUsername().equals(memberCheck.get().getUsername())){
-            return ResponseDto.fail("400","Modified Author Only");
+        if (!comment.getMember().getUsername().equals(memberCheck.get().getUsername())) {
+            return ResponseDto.fail("400", "Modified Author Only");
         }
         comment.update(requestDto);
         return ResponseDto.success(
@@ -188,7 +234,7 @@ public class CommentService {
                         .userprofile(comment.getMember().getUserprofile())
                         .content(comment.getContent())
                         .Ismine(comment.getMember().getUsername().equals(memberCheck.get().getUsername()))
-                        .build(),"200","Successfully edited comment."
+                        .build(), "200", "Successfully edited comment."
         );
     }
 
@@ -198,7 +244,7 @@ public class CommentService {
         return optionalComment.orElse(null);
     }
 
-//    @Transactional
+    //    @Transactional
 //    public ResponseDto<?> deleteComment(int id, HttpServletRequest request){
 //        if (request.getHeader("Authorization") == null) {
 //            return ResponseDto.fail("400", "AccessToken.");
@@ -218,20 +264,20 @@ public class CommentService {
 //        return ResponseDto.success(null,"200","Successfully deleted comment.");
 //    }
     @Transactional
-    public ResponseDto<?> deleteComment(int id, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseDto<?> deleteComment(int id, @AuthenticationPrincipal UserDetails userDetails) {
         Optional<Member> memberCheck = memberRepository.findByUsername(userDetails.getUsername());
-        if (memberCheck.isEmpty()){
-            return ResponseDto.fail("400","fail");
+        if (memberCheck.isEmpty()) {
+            return ResponseDto.fail("400", "fail");
         }
         Comment comment = isPresentComment(id);
-        if (null == comment){
-            return ResponseDto.fail("400","Already deleted comment.");
+        if (null == comment) {
+            return ResponseDto.fail("400", "Already deleted comment.");
         }
 
-        if (!comment.getMember().getUsername().equals(memberCheck.get().getUsername())){
-            return ResponseDto.fail("400","Deleted Author Only");
+        if (!comment.getMember().getUsername().equals(memberCheck.get().getUsername())) {
+            return ResponseDto.fail("400", "Deleted Author Only");
         }
         commentRepository.delete(comment);
-        return ResponseDto.success(null,"200","Successfully deleted comment.");
+        return ResponseDto.success(null, "200", "Successfully deleted comment.");
     }
 }
