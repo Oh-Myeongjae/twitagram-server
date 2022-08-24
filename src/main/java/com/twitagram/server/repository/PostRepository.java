@@ -12,4 +12,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     int countByMember_Id(int member_id);
 //    List<Post> findAllByOrderByModifiedAtDesc(); // 이걸 쓰면 왜   Error creating bean with name 'XXX' 발생했을까??
+
+    Page<Post> findPostsById(int id,Pageable pageable);
+
 }
