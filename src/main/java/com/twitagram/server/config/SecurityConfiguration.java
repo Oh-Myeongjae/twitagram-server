@@ -39,7 +39,8 @@ public class SecurityConfiguration {
             "/api/signup",
             "/api/login",
             "/h2-console/**",
-            "/api/comments/**"
+            "/api/comments/**",
+            "/"
     };
     @Bean
     public PasswordEncoder passwordEncoder() {

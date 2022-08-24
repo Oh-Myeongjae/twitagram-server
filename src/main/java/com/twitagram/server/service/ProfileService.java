@@ -163,7 +163,7 @@ public class ProfileService {
                 .currcontent(followingList.getNumberOfElements())
                 .totalelements(followingList.getTotalElements())
                 .isme(mypage)
-                .following(dtoList)
+                .followers(dtoList)
                 .build();
 
         return ResponseDto.success(pageDto,"200","마이페이지 followers조회");

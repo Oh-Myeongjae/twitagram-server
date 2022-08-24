@@ -19,11 +19,15 @@ public class FollowService {
     public ResponseDto<?> userFollow(String username, String target) {
         Optional<Member> user = memberRepository.findByUsername(username);
         Optional<Member> following = memberRepository.findByUsername(target);
+        int check = followRepository.countByMember_IdAndFollow_Id(user.get().getId(),following.get().getId());
+        if(check != 0){
+            return ResponseDto.fail("400","Follow "+target);
+        }
         followRepository.save(
                 Follow.builder()
-                .member(user.get())
-                .follow(following.get())
-                .build()
+                        .member(user.get())
+                        .follow(following.get())
+                        .build()
         );
         return ResponseDto.success(null,"200","Follow "+target);
     }
