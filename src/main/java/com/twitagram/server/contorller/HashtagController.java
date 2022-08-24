@@ -32,4 +32,9 @@ public class HashtagController {
         System.out.println("tags :" + tag);
         return hashTagService.getPostByHashTag(tag, page, limit, sortBy, userDetails);
     }
+
+    @GetMapping("/api/hashtag/rank")
+    private ResponseDto<?> getHashTagsRank(){
+        return hashTagService.getHashTagsRank();
+    }
 }

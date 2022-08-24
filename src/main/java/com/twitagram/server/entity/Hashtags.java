@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Hashtags {
+public class Hashtags extends Timestamped{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
