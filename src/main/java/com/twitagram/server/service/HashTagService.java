@@ -1,5 +1,6 @@
 package com.twitagram.server.service;
 
+import com.twitagram.server.dto.response.HashTagsResponseDto;
 import com.twitagram.server.dto.response.PostPageDto;
 import com.twitagram.server.dto.response.PostResponseDto;
 import com.twitagram.server.dto.response.ResponseDto;
@@ -15,11 +16,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.search.SearchTerm;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -103,9 +102,51 @@ public class HashTagService {
 
     @Transactional(readOnly = true)
     public ResponseDto<?> getHashTagsRank() {
-        Hashtags tags = new Hashtags();
+//        List<Post> postList = new ArrayList<Post>();
+//        for (Hashtags el : tagCheck) {
+//            Post post = el.getPost();
+//            postList.add(post);
+//        }
+//        System.out.println("postList : " + postList);
+//        return ResponseDto.success(null, "200", "success");
+        List<Hashtags> hashtags = hashtagRepository.findAll();
+        List<String> hashtagsList = new ArrayList<>();
+        for (Hashtags el : hashtags) {
+            hashtagsList.add(el.getTags());
+        }
+        System.out.println("hashtags : " + hashtagsList);
 
-        return ResponseDto.success(null, "200", "Successfully get hashtag ranking");
+        Set<String> set = new HashSet<>(hashtagsList);
+        List<String> hashtagsRankList = new ArrayList<>();
+        List<Integer> hashtagsRankList2 = new ArrayList<>();
+
+
+        for (String str : set) {
+            System.out.println(str);
+            hashtagsRankList.add(str);
+            System.out.println(hashtagsRankList);
+            System.out.println(Collections.frequency(hashtagsList, str));
+            hashtagsRankList2.add(Collections.frequency(hashtagsList, str));
+            System.out.println(hashtagsRankList2);
+        }
+//        HashMap<String, Integer> map = new HashMap<>();
+//        for (int i = 0; i < hashtagsRankList.size(); i++) {
+//           map.put(hashtagsRankList.get(i),hashtagsRankList2.get(i));
+//        }
+//        System.out.println("----------");
+//        System.out.println("map : "+map);
+        List<String[]> htg = new ArrayList<String[]>();
+        for (int i = 0; i<hashtagsRankList.size();i++){
+            String[] tagrank = new String[2];
+            tagrank[0] = hashtagsRankList.get(i);
+            tagrank[1] = hashtagsRankList2.get(i)+"";
+            htg.add(tagrank);
+        }
+        System.out.println(htg);
+        HashTagsResponseDto tagsDto = HashTagsResponseDto.builder()
+                .hashtags(htg)
+                .build();
+        return ResponseDto.success(tagsDto, "200", "Successfully get hashtag ranking");
     }
 
 }
