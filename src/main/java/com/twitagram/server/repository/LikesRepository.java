@@ -9,5 +9,7 @@ public interface LikesRepository extends JpaRepository<Likes, Integer> {
     Likes findByMember_Id(int id);
 
     Likes findByPost_id(int postId);
+
+    Likes findByMember_IdAndPost_Id(int memmer_id, int post_id);
 }
 
