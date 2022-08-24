@@ -35,6 +35,7 @@ public class PostService {
     private final HashtagRepository hashtagRepository;
     private final MemberRepository memberRepository;
 
+    private  final CommentRepository commentRepository;
     private final LikesRepository likesRepository;
     private final FollowRepository followRepository;
 
@@ -94,7 +95,7 @@ public class PostService {
 
             int LikeCount = likesRepository.countAllByPost_Id(post.getId());
             Optional<Member> member = memberRepository.findByUsername(user.getUsername());
-            Likes LikeCheck = likesRepository.findByMember_Id(member.get().getId());
+            Likes LikeCheck = likesRepository.findByMember_IdAndPost_Id(member.get().getId(),post.getId());
             for(Hashtags s :  hashtagsList){
                 Tags.add(s.getTags());
             }
@@ -104,6 +105,7 @@ public class PostService {
            String time = post.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
 
             int followCount = followRepository.countByMember_IdAndFollow_Id(member.get().getId(),post.getMember().getId());
+            int numComment = commentRepository.countByPost_Id(post.getId());
             dtoList.add( PostResponseDto.builder()
                             .id(post.getId())
                             .username(post.getMember().getUsername())
@@ -115,7 +117,7 @@ public class PostService {
                             .time(time)
                             .Isliked(LikeCheck != null)
                             .Isfollowing(followCount != 0)
-//                            .numcomments()
+                            .numcomments(numComment)
                             .numlikes(LikeCount)
                     .build()
             );
@@ -149,7 +151,7 @@ public class PostService {
         List<String> Tags = new ArrayList<String>();
 
         int LikeCount = likesRepository.countAllByPost_Id(post.getId());
-        Likes LikeCheck = likesRepository.findByMember_Id(member.get().getId());
+        Likes LikeCheck = likesRepository.findByMember_IdAndPost_Id(member.get().getId(),post.getId());
         for(Hashtags s :  hashtagsList){
             Tags.add(s.getTags());
         }
@@ -159,7 +161,7 @@ public class PostService {
         String time = post.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
 
         int followCount = followRepository.countByMember_IdAndFollow_Id(member.get().getId(),post.getMember().getId());
-
+        int numComment = commentRepository.countByPost_Id(post.getId());
         PostResponseDto pageDto = PostResponseDto.builder()
                         .id(post.getId())
                         .username(post.getMember().getUsername())
@@ -171,7 +173,7 @@ public class PostService {
                         .time(time)
                         .Isliked(LikeCheck != null)
                         .Isfollowing(followCount != 0)
-//                       .numcomments()
+                       .numcomments(numComment)
                         .numlikes(LikeCount)
                         .build();
         return ResponseDto.success(pageDto,"200","성공적으로 수정되었습니다.");
@@ -231,7 +233,7 @@ public class PostService {
 
         int LikeCount = likesRepository.countAllByPost_Id(post.getId());
         Optional<Member> member = memberRepository.findByUsername(userDetails.getUsername());
-        Likes LikeCheck = likesRepository.findByMember_Id(member.get().getId());
+        Likes LikeCheck = likesRepository.findByMember_IdAndPost_Id(member.get().getId(),post.getId());
         for(Hashtags s :  hashtagsList){
             Tags.add(s.getTags());
         }
@@ -241,7 +243,7 @@ public class PostService {
         String time = post.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
 
         int followCount = followRepository.countByMember_IdAndFollow_Id(member.get().getId(),post.getMember().getId());
-
+        int numComment = commentRepository.countByPost_Id(post.getId());
         return ResponseDto.success(PostResponseDto.builder()
                 .id(post.getId())
                 .username(post.getMember().getUsername())
@@ -253,7 +255,7 @@ public class PostService {
                 .time(time)
                 .Isliked(LikeCheck != null)
                 .Isfollowing(followCount != 0)
-//                       .numcomments()
+                .numcomments(numComment)
                 .numlikes(LikeCount)
                 .build(),"200","Successfully get posts.");
     }

@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Follow {
+public class Follow extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
