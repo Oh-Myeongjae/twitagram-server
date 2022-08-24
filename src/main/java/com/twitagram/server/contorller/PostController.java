@@ -61,4 +61,9 @@ public class PostController {
     public ResponseDto<?> deletePost(@PathVariable int postId,  @AuthenticationPrincipal UserDetails user) throws UnsupportedEncodingException {
         return postService.deletePost(postId,user);
     }
+    //게시글 단일 조회
+    @GetMapping("/post/{id}")
+    public ResponseDto<?> getPost(@PathVariable int id, @AuthenticationPrincipal UserDetails userDetails){
+        return postService.getPost(id,userDetails);
+    }
 }

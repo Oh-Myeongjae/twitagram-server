@@ -215,4 +215,46 @@ public class PostService {
         Optional<Post> optionalPost = postRepository.findById(id);
         return optionalPost.orElse(null);
     }
+    //게시글 단건 조회
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getPost(int id,UserDetails userDetails){
+        Post post = postRepository.findById(id).orElseGet(null);
+        if (null == post) {
+            return ResponseDto.fail("400", "Not existing postId");
+        }
+
+        List<Image> imageList = imageRepository.findAllByPost_Id(post.getId());
+        List<Hashtags>  hashtagsList = hashtagRepository.findAllByPost_Id(post.getId());
+
+        List<String> URLS = new ArrayList<String>();
+        List<String> Tags = new ArrayList<String>();
+
+        int LikeCount = likesRepository.countAllByPost_Id(post.getId());
+        Optional<Member> member = memberRepository.findByUsername(userDetails.getUsername());
+        Likes LikeCheck = likesRepository.findByMember_Id(member.get().getId());
+        for(Hashtags s :  hashtagsList){
+            Tags.add(s.getTags());
+        }
+        for(Image s :  imageList){
+            URLS.add(s.getImageurls());
+        }
+        String time = post.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+
+        int followCount = followRepository.countByMember_IdAndFollow_Id(member.get().getId(),post.getMember().getId());
+
+        return ResponseDto.success(PostResponseDto.builder()
+                .id(post.getId())
+                .username(post.getMember().getUsername())
+                .userprofile(post.getMember().getUserprofile())
+                .content(post.getContent())
+                .imageurls(URLS)
+                .hashtags(Tags)
+                .Ismine(Objects.equals(post.getMember().getUsername(), userDetails.getUsername()))
+                .time(time)
+                .Isliked(LikeCheck != null)
+                .Isfollowing(followCount != 0)
+//                       .numcomments()
+                .numlikes(LikeCount)
+                .build(),"200","Successfully get posts.");
+    }
 }
