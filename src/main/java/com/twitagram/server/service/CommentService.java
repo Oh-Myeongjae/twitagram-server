@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -141,13 +142,15 @@ public class CommentService {
 //        return ResponseDto.success(comments, "200", "Successfully get comments.");
 //    }
     @Transactional
-    public ResponseDto<?> getComments(int id, Integer pageNum, Integer pageLimit, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseDto<?> getComments(int id, Integer pageNum, Integer pageLimit, String sortBy, @AuthenticationPrincipal UserDetails userDetails) {
         Post post = isPresentPost(id);
         if (post == null) {
             return ResponseDto.fail("400", "Fail to get comments. Wrong page number");
         }
 
-        Pageable pageable = PageRequest.of(pageNum, pageLimit);
+        Sort.Direction direction = Sort.Direction.DESC; // true: 오름차순 (asc) , 내림차순 DESC(최신 것이 위로온다)
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(pageNum, pageLimit,sort);
         Page<Comment> commentList = commentRepository.findAllByPost(post, pageable);
         List<CommentResponseDto> comments = new ArrayList<>();
 

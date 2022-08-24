@@ -42,7 +42,8 @@ public class CommentController {
                                       @RequestParam(value = "pageLimit",defaultValue = "5") int limit,
                                       @AuthenticationPrincipal UserDetails userDetails) {
         page = page -1;
-        return commentService.getComments(id, page, limit, userDetails);
+        String sortBy = "createdAt";
+        return commentService.getComments(id, page, limit, sortBy, userDetails);
     }
 
 //    @PutMapping(value = "/api/comment/{id}")
