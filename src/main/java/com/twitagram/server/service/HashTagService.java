@@ -96,15 +96,15 @@ public class HashTagService {
                 .currcontent(tagCheck.getNumberOfElements())
                 .posts(dtoList)
                 .build();
-        return ResponseDto.success(pageDto, "200", "게시글 전체 조회");
+        return ResponseDto.success(pageDto, "200", "Successfully get posts");
 
 
     }
 
     @Transactional(readOnly = true)
     public ResponseDto<?> getHashTagsRank() {
-        Hashtags hashtags = new Hashtags();
-        return ResponseDto.success(hashtags, "200", "Successfully get hashtag ranking");
+        Hashtags tags = new Hashtags();
+        return ResponseDto.success(null, "200", "Successfully get hashtag ranking");
     }
 
 }
