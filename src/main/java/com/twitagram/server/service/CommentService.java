@@ -5,9 +5,11 @@ import com.twitagram.server.dto.response.CommentPageDto;
 import com.twitagram.server.dto.response.CommentResponseDto;
 import com.twitagram.server.dto.response.ResponseDto;
 import com.twitagram.server.entity.Comment;
+import com.twitagram.server.entity.Hashtags;
 import com.twitagram.server.entity.Member;
 import com.twitagram.server.entity.Post;
 import com.twitagram.server.repository.CommentRepository;
+import com.twitagram.server.repository.HashtagRepository;
 import com.twitagram.server.repository.MemberRepository;
 import com.twitagram.server.repository.PostRepository;
 import com.twitagram.server.utils.jwt.TokenProvider;
@@ -37,8 +39,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
-//    private final HashTagRepository hashTagRepository;
-//
+    private final HashtagRepository hashtagRepository;
 //    private final HashTagService hashTagService;
 
 //    @Transactional
@@ -71,7 +72,8 @@ public class CommentService {
 
     @Transactional
     public ResponseDto<?> createComment(int id, CommentRequestDto requestDto, UserDetails userDetails) {
-        System.out.println("Username" + userDetails.getUsername());
+//        System.out.println("Username" + userDetails.getUsername());
+        List<String> tags = requestDto.getHashtags();
         Optional<Member> memberCheck = memberRepository.findByUsername(userDetails.getUsername());
         if (memberCheck.isEmpty()) {
             return ResponseDto.fail("400", "Fail to create new comment.");
@@ -88,6 +90,17 @@ public class CommentService {
                 .content(requestDto.getContent())
                 .build();
         commentRepository.save(comment);
+
+        if(tags != null){
+            for(String tag : tags){
+                hashtagRepository.save(
+                        Hashtags.builder()
+                                .tags(tag)
+                                .post(null)
+                                .build()
+                );
+            }
+        }
 
 //        hashTagService.createHashTag(requestDto.getHashtags());
 

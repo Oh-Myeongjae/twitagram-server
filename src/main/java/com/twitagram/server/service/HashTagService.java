@@ -104,6 +104,7 @@ public class HashTagService {
     @Transactional(readOnly = true)
     public ResponseDto<?> getHashTagsRank() {
         Hashtags tags = new Hashtags();
+
         return ResponseDto.success(null, "200", "Successfully get hashtag ranking");
     }
 
