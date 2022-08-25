@@ -94,8 +94,14 @@ public class PostService {
             List<String> Tags = new ArrayList<String>();
 
             int LikeCount = likesRepository.countAllByPost_Id(post.getId());
-            Optional<Member> member = memberRepository.findByUsername(user.getUsername());
-            Likes LikeCheck = likesRepository.findByMember_IdAndPost_Id(member.get().getId(),post.getId());
+            int LikeCheck = 0;
+            int followCount = 0;
+
+            if(user != null){
+                Optional<Member> member = memberRepository.findByUsername(user.getUsername());
+                LikeCheck = likesRepository.countByMember_IdAndPost_Id(member.get().getId(),post.getId());
+                followCount = followRepository.countByMember_IdAndFollow_Id(member.get().getId(),post.getMember().getId());
+            }
             for(Hashtags s :  hashtagsList){
                 Tags.add(s.getTags());
             }
@@ -104,7 +110,6 @@ public class PostService {
             }
            String time = post.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
 
-            int followCount = followRepository.countByMember_IdAndFollow_Id(member.get().getId(),post.getMember().getId());
             int numComment = commentRepository.countByPost_Id(post.getId());
             dtoList.add( PostResponseDto.builder()
                             .id(post.getId())
@@ -115,7 +120,7 @@ public class PostService {
                             .hashtags(Tags)
                             .Ismine(Objects.equals(post.getMember().getUsername(), user.getUsername()))
                             .time(time)
-                            .Isliked(LikeCheck != null)
+                            .Isliked(LikeCheck != 0)
                             .Isfollowing(followCount != 0)
                             .numcomments(numComment)
                             .numlikes(LikeCount)
@@ -165,8 +170,9 @@ public class PostService {
         List<String> URLS = new ArrayList<String>();
         List<String> Tags = new ArrayList<String>();
 
+        int LikeCheck = 0;
         int LikeCount = likesRepository.countAllByPost_Id(post.getId());
-        Likes LikeCheck = likesRepository.findByMember_IdAndPost_Id(member.get().getId(),post.getId());
+        LikeCheck = likesRepository.countByMember_IdAndPost_Id(member.get().getId(),post.getId());
         for(Hashtags s :  hashtagsList){
             Tags.add(s.getTags());
         }
@@ -186,7 +192,7 @@ public class PostService {
                         .hashtags(Tags)
                         .Ismine(Objects.equals(post.getMember().getUsername(), user.getUsername()))
                         .time(time)
-                        .Isliked(LikeCheck != null)
+                        .Isliked(LikeCheck != 0)
                         .Isfollowing(followCount != 0)
                        .numcomments(numComment)
                         .numlikes(LikeCount)
@@ -250,9 +256,16 @@ public class PostService {
         List<String> URLS = new ArrayList<String>();
         List<String> Tags = new ArrayList<String>();
 
+        int LikeCheck = 0;
+        int followCount = 0;
+
         int LikeCount = likesRepository.countAllByPost_Id(post.getId());
-        Optional<Member> member = memberRepository.findByUsername(userDetails.getUsername());
-        Likes LikeCheck = likesRepository.findByMember_IdAndPost_Id(member.get().getId(),post.getId());
+        if(userDetails !=null){
+            Optional<Member> member = memberRepository.findByUsername(userDetails.getUsername());
+            LikeCheck = likesRepository.countByMember_IdAndPost_Id(member.get().getId(),post.getId());
+            followCount = followRepository.countByMember_IdAndFollow_Id(member.get().getId(),post.getMember().getId());
+        }
+
         for(Hashtags s :  hashtagsList){
             Tags.add(s.getTags());
         }
@@ -261,7 +274,7 @@ public class PostService {
         }
         String time = post.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
 
-        int followCount = followRepository.countByMember_IdAndFollow_Id(member.get().getId(),post.getMember().getId());
+
         int numComment = commentRepository.countByPost_Id(post.getId());
         return ResponseDto.success(PostResponseDto.builder()
                 .id(post.getId())
@@ -270,9 +283,9 @@ public class PostService {
                 .content(post.getContent())
                 .imageurls(URLS)
                 .hashtags(Tags)
-                .Ismine(Objects.equals(post.getMember().getUsername(), userDetails.getUsername()))
+                .Ismine(userDetails != null && Objects.equals(post.getMember().getUsername(), userDetails.getUsername()))
                 .time(time)
-                .Isliked(LikeCheck != null)
+                .Isliked(LikeCheck != 0)
                 .Isfollowing(followCount != 0)
                 .numcomments(numComment)
                 .numlikes(LikeCount)
