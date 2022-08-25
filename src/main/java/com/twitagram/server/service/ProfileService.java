@@ -49,7 +49,7 @@ public class ProfileService {
                 URLS.add(s.getImageurls());
             }
             String time = post.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-            Likes LikeCheck = likesRepository.findByMember_IdAndPost_Id(member.get().getId(),post.getId());
+            int LikeCheck = likesRepository.countByMember_IdAndPost_Id(member.get().getId(),post.getId());
             int followCount = followRepository.countByMember_IdAndFollow_Id(member.get().getId(),post.getMember().getId());
             int  numComment = commentRepository.countByPost_Id(post.getId());
             int LikeCount = likesRepository.countAllByPost_Id(post.getId());
@@ -63,7 +63,7 @@ public class ProfileService {
                     .hashtags(Tags)
                     .Ismine(mypage)
                     .time(time)
-                    .Isliked(LikeCheck != null)
+                    .Isliked(LikeCheck != 0)
                     .Isfollowing(followCount != 0)
                     .numcomments(numComment)
                     .numlikes(LikeCount)
