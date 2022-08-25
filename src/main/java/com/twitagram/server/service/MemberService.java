@@ -51,12 +51,13 @@ public class MemberService {
         Member member = Member.builder()
                 .username(requestDto.getUsername())
                 .email(requestDto.getEmail())
+                .emailCheck(false)
                 .password(passwordEncoder.encode(requestDto.getPassword()))
                 .userprofile("https://joeschmoe.io/api/v1/" + requestDto.getUsername())
                 .build();
 
         memberRepository.save(member);
-        emailService.sendSimpleMessage("dhaudwo1@daum.net", member.getUsername());
+        emailService.sendSimpleMessage(requestDto.getEmail(), member.getUsername());
         return ResponseDto.success(null, "200", "Successfully sign up.");
     }
 
@@ -70,11 +71,13 @@ public class MemberService {
         Optional<Member> optionalMember = memberRepository.findByEmail(email);
         return optionalMember.orElse(null);
     }
-//    @Transactional(readOnly = true)
-//    public Member isPresentMemberByPassword(String password) {
-//        Optional<Member> optionalMember = memberRepository.findByPassword(password);
-//        return optionalMember.orElse(null);
-//    }
+
+    @Transactional()
+    public ResponseDto<?> EmailCheck(String username) {
+        Optional<Member> member = memberRepository.findByUsername(username);
+        member.get().update();
+        return ResponseDto.success(null,"200","Email check success");
+    }
 
     @Transactional
     public ResponseDto<?> login(LoginRequestDto requestDto, HttpServletResponse response) {
@@ -82,9 +85,9 @@ public class MemberService {
         if (null == member) {
             return ResponseDto.fail("400", "Not existing email or wrong password");
         }
-//        if (null == isPresentMemberByPassword(requestDto.getPassword())){
-//            return ResponseDto.fail("400", "Not existing email or wrong password");
-//        }
+        if(!member.isEmailCheck()){
+            return ResponseDto.fail("400", "Please confirm your email");
+        }
         if (!member.validatePassword(passwordEncoder, requestDto.getPassword())) {
             return ResponseDto.fail("400", "Not existing email or wrong password");
         }
@@ -114,6 +117,5 @@ public class MemberService {
 //        response.addHeader("RefreshToken", tokenDto.getRefreshToken());
         response.addHeader("Access-Token-Expire-Time", tokenDto.getAccessTokenExpiresIn().toString());
     }
-
 
 }

@@ -28,9 +28,6 @@ public class PostController {
         if (postRequestDto.getContent().equals("")) {
             return ResponseDto.fail("400", "Fail to create new post.");
         }
-        System.out.println("postRequestDto = " + postRequestDto.getContent());
-        System.out.println("postRequestDto.getHashtags() = " + postRequestDto.getHashtags());
-        System.out.println("postRequestDto.getFiles() = " + postRequestDto.getFiles());
         postService.createPost(postRequestDto, user);
         return ResponseDto.success(null, "200", "Successfully created new post.");
     }

@@ -8,6 +8,7 @@ import java.util.List;
 public interface ImageRepository extends JpaRepository<Image, Integer> {
 //    List<Image> findAllById(int id);
     List<Image> findAllByPost_Id(int id);
+    void deleteAllByPost_Id(int Post_id);
 
 //    List<Post> findAllByOrderByModifiedAtDesc(); // 이걸 쓰면 왜   Error creating bean with name 'XXX' 발생했을까??
 }

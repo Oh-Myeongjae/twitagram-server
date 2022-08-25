@@ -27,9 +27,10 @@ public class Post extends Timestamped{
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    public void update(PostRequestDto postRequestDto, Member member){
+//    public void update(PostRequestDto postRequestDto,Member member){
+    public void update(PostRequestDto postRequestDto){
         this.content = postRequestDto.getContent();
-        this.member = member;
+//        this.member = member;
     }
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
