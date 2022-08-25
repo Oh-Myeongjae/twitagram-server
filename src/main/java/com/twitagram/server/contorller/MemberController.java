@@ -29,7 +29,8 @@ public class MemberController {
 
     @RequestMapping(value = "/api/email", method = RequestMethod.GET)
     public ResponseDto<?> emailCheck(@RequestParam("username") String username,HttpServletResponse response) throws IOException {
-        response.sendRedirect("http://localhost:8080/");
+//        response.sendRedirect("http://localhost:8080/");
+        response.sendRedirect("https://sparta-omj.shop/");
         return memberService.EmailCheck(username);
     }
 

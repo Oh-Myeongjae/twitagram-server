@@ -37,19 +37,11 @@ public class HashTagService {
         Sort.Direction direction = Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, limit, sort);
-        Page<Hashtags> tagCheck = hashtagRepository.findAllByTags(tag, pageable);
+        Page<Hashtags> tagCheck = hashtagRepository.findAllByTagsAndPostNotNull(tag, pageable);
         if (tagCheck.isEmpty()) {
             return ResponseDto.fail("400", "Wrong Tag");
         }
         System.out.println("tagCheck : " + tagCheck);
-
-//        List<Post> postList = new ArrayList<Post>();
-//        for (Hashtags el : tagCheck) {
-//            Post post = el.getPost();
-//            postList.add(post);
-//        }
-//        System.out.println("postList : " + postList);
-//        return ResponseDto.success(null, "200", "success");
 
         List<PostResponseDto> dtoList = new ArrayList<>();
 
@@ -102,13 +94,6 @@ public class HashTagService {
 
     @Transactional(readOnly = true)
     public ResponseDto<?> getHashTagsRank() {
-//        List<Post> postList = new ArrayList<Post>();
-//        for (Hashtags el : tagCheck) {
-//            Post post = el.getPost();
-//            postList.add(post);
-//        }
-//        System.out.println("postList : " + postList);
-//        return ResponseDto.success(null, "200", "success");
         List<Hashtags> hashtags = hashtagRepository.findAll();
         List<String> hashtagsList = new ArrayList<>();
         for (Hashtags el : hashtags) {

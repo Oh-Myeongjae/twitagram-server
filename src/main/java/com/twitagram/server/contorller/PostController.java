@@ -42,7 +42,7 @@ public class PostController {
 
     @PutMapping("/post/{postId}") // 게시글 수정 (추후에 시간이 된다면 패치로 수정해보는 것도 나쁘진 않을듯!!)
     public ResponseDto<?> updatePost(@PathVariable int postId,
-                                     @ModelAttribute PostRequestDto postRequestDto,
+                                     @RequestBody PostRequestDto postRequestDto,
                                      @AuthenticationPrincipal UserDetails user) throws IOException {
         return postService.updatePost(postId, postRequestDto, user);
     }
