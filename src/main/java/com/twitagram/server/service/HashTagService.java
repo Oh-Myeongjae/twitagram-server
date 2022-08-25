@@ -101,33 +101,55 @@ public class HashTagService {
         }
         System.out.println("hashtags : " + hashtagsList);
 
-        Set<String> set = new HashSet<>(hashtagsList);
-        List<String> hashtagsRankList = new ArrayList<>();
-        List<Integer> hashtagsRankList2 = new ArrayList<>();
-
-
-        for (String str : set) {
-            System.out.println(str);
-            hashtagsRankList.add(str);
-            System.out.println(hashtagsRankList);
-            System.out.println(Collections.frequency(hashtagsList, str));
-            hashtagsRankList2.add(Collections.frequency(hashtagsList, str));
-            System.out.println(hashtagsRankList2);
-        }
-//        HashMap<String, Integer> map = new HashMap<>();
-//        for (int i = 0; i < hashtagsRankList.size(); i++) {
-//           map.put(hashtagsRankList.get(i),hashtagsRankList2.get(i));
+//        Set<String> set = new HashSet<>(hashtagsList);
+//        List<String> hashtagsRankList = new ArrayList<>();
+//        List<Integer> hashtagsRankList2 = new ArrayList<>();
+//
+//        for (String str : set) {
+//            System.out.println(str);
+//            hashtagsRankList.add(str);
+//            System.out.println(hashtagsRankList);
+//            System.out.println(Collections.frequency(hashtagsList, str));
+//            hashtagsRankList2.add(Collections.frequency(hashtagsList, str));
+//            System.out.println(hashtagsRankList2);
 //        }
-//        System.out.println("----------");
-//        System.out.println("map : "+map);
+//
+//        List<String[]> htg = new ArrayList<String[]>();
+//        for (int i = 0; i<hashtagsRankList.size();i++){
+//            String[] tagrank = new String[2];
+//            tagrank[0] = hashtagsRankList.get(i);
+//            tagrank[1] = hashtagsRankList2.get(i)+"";
+//            htg.add(tagrank);
+//        }
+        HashMap<String,Integer> hashMap = new HashMap<String,Integer>();
+        for(String key : hashtagsList){
+            if(hashMap.get(key) ==null){
+                hashMap.put(key,1);
+            }else{
+                int count = hashMap.get(key);
+                hashMap.put(key,count+1);
+            }
+        }
+
+        List<Integer> useList  = new ArrayList<>(hashMap.values());
+        useList.sort(Comparator.reverseOrder());
+
         List<String[]> htg = new ArrayList<String[]>();
-        for (int i = 0; i<hashtagsRankList.size();i++){
+        while (hashMap.size()>0){
             String[] tagrank = new String[2];
-            tagrank[0] = hashtagsRankList.get(i);
-            tagrank[1] = hashtagsRankList2.get(i)+"";
+            for(String key : hashMap.keySet()){
+                if(hashMap.get(key) == useList.get(0)){
+                    tagrank[0] = key;
+                    tagrank[1] = useList.get(0)+"";
+                    hashMap.remove(key);
+                    useList.remove(0);
+                    break;
+                }
+            }
             htg.add(tagrank);
         }
         System.out.println(htg);
+
         HashTagsResponseDto tagsDto = HashTagsResponseDto.builder()
                 .hashtags(htg)
                 .build();

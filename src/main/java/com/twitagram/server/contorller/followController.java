@@ -23,6 +23,7 @@ public class followController {
 
     @DeleteMapping("api/user/unfollow")
     public ResponseDto<?> userUnFollow(@RequestBody FollowDto followDto, @AuthenticationPrincipal UserDetails user) {
+        System.out.println("언팔로우 : "+ followDto.getUsername());
         return followService.userUnFollow(user.getUsername(),followDto.getUsername());
     }
 }
