@@ -129,7 +129,7 @@ public class PostService {
                 .posts(dtoList)
                 .build();
 //        return ResponseDto.success(pageDto);
-        return ResponseDto.success(pageDto,"200","게시글 전체 조회");
+        return ResponseDto.success(pageDto,"200","Successfully get posts.");
     }
 
     @Transactional
@@ -139,7 +139,7 @@ public class PostService {
         Optional<Post> optionalPost =  postRepository.findById(postId);
 
         if(optionalPost.isEmpty()){
-            return ResponseDto.fail("에러코드~~","존재하지 않는 게시글");
+            return ResponseDto.fail("401","Fail to edit post.");
         }
 
         Post post = optionalPost.get();
@@ -191,7 +191,7 @@ public class PostService {
                        .numcomments(numComment)
                         .numlikes(LikeCount)
                         .build();
-        return ResponseDto.success(pageDto,"200","성공적으로 수정되었습니다.");
+        return ResponseDto.success(pageDto,"200","Successfully edited post.");
     }
 
     public ResponseDto<?> likePost(int postId, UserDetails user) {
@@ -199,7 +199,7 @@ public class PostService {
         Optional<Post> optionalPost =  postRepository.findById(postId);
 
         if(optionalPost.isEmpty()){
-            return ResponseDto.fail("에러코드~~","존재하지 않는 게시글");
+            return ResponseDto.fail("400","Already deleted post.");
         }
         Post post = optionalPost.get();
         likesRepository.save(Likes.builder()
@@ -211,6 +211,10 @@ public class PostService {
     }
 
     public ResponseDto<?> unlikePost(int postId) {
+        Optional<Post> optionalPost =  postRepository.findById(postId);
+        if(optionalPost.isEmpty()){
+            return ResponseDto.fail("400","Already deleted post.");
+        }
         Likes likes = likesRepository.findByPost_id(postId);
         likesRepository.delete(likes);
         return ResponseDto.success(null,"200","Successfully unliked the post.");
@@ -220,12 +224,12 @@ public class PostService {
         Optional<Post> optionalPost =  postRepository.findById(postId);
 
         if(optionalPost.isEmpty()){
-            return ResponseDto.fail("에러코드~~","존재하지 않는 게시글");
+            return ResponseDto.fail("400","Already deleted post.");
         }
 
         Post post = optionalPost.get();
         postRepository.delete(post);
-        return ResponseDto.success(null,"200","게시글 삭제 성공");
+        return ResponseDto.success(null,"200","Successfully deleted post");
     }
     @Transactional(readOnly = true)
     public Post isPresentPost(Integer id) {

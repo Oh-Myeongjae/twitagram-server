@@ -79,7 +79,7 @@ public class ProfileService {
                 .posts(dtoList)
                 .build();
 //        return ResponseDto.success(pageDto);
-        return ResponseDto.success(pageDto,"200","게시글 전체 조회");
+        return ResponseDto.success(pageDto,"200","Successfully get posts");
     }
 
     public ResponseDto<?> getUserInfo(String username) {
@@ -95,7 +95,7 @@ public class ProfileService {
                 .numfollowing(following)
                 .numfollowers(follower)
                 .build();
-        return ResponseDto.success(profileInfoDto,"200","유저정보 가져오기 완료");
+        return ResponseDto.success(profileInfoDto,"200","Successfully get profile info.");
     }
 
     public ResponseDto<?> getAllfollowing(int page, int size, String sortBy, String username, boolean mypage) {
@@ -131,7 +131,7 @@ public class ProfileService {
                 .following(dtoList)
                 .build();
 
-        return ResponseDto.success(pageDto,"200","마이페이지 following조회");
+        return ResponseDto.success(pageDto,"200","Successfully get following list.");
     }
 
     public ResponseDto<?> getAllFollowers(int page, int size, String sortBy, String username, boolean mypage) {
@@ -166,7 +166,7 @@ public class ProfileService {
                 .followers(dtoList)
                 .build();
 
-        return ResponseDto.success(pageDto,"200","마이페이지 followers조회");
+        return ResponseDto.success(pageDto,"200","Successfully get follower list");
 
     }
 }
