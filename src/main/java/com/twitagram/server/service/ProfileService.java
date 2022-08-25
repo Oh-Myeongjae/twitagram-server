@@ -61,7 +61,7 @@ public class ProfileService {
                     .content(post.getContent())
                     .imageurls(URLS)
                     .hashtags(Tags)
-                    .Ismine(Objects.equals(post.getMember().getUsername(), username ))
+                    .Ismine(mypage)
                     .time(time)
                     .Isliked(LikeCheck != null)
                     .Isfollowing(followCount != 0)
