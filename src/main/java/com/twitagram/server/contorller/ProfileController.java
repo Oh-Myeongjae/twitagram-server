@@ -5,10 +5,7 @@ import com.twitagram.server.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -77,6 +74,7 @@ public class ProfileController {
     }
 
     @GetMapping("api/profile/info")
+    @CrossOrigin("*")
     public ResponseDto<?> profileinfo(HttpServletRequest request, @AuthenticationPrincipal UserDetails user) {
         return profileService.getUserInfo(user.getUsername());
     }

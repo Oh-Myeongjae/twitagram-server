@@ -13,5 +13,5 @@ import java.util.List;
 public class PostRequestDto {
     private String content;
     private List<String> hashtags;
-    private List<MultipartFile> imagefiles;
+    private List<MultipartFile> files;
 }

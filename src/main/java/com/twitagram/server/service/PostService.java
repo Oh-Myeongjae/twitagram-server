@@ -43,7 +43,7 @@ public class PostService {
 
     @Transactional
     public void createPost(PostRequestDto postRequestDto, UserDetails user) throws IOException {
-        List<MultipartFile> FileList = postRequestDto.getImagefiles();
+        List<MultipartFile> FileList = postRequestDto.getFiles();
         List<String> tags = postRequestDto.getHashtags();
         Optional<Member> author = memberRepository.findByUsername(user.getUsername());
         Post post = postRepository.save(
