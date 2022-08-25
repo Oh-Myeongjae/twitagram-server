@@ -6,17 +6,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class CorsConfiguration implements WebMvcConfigurer {
-//    public static final String ALLOWED_METHOD_NAMES = "GET,HEAD,POST,PUT,DELETE,TRACE,OPTIONS,PATCH";
-
     @Override
     public void addCorsMappings(final CorsRegistry registry) {
         registry.addMapping("/**")
-//                .allowedMethods(ALLOWED_METHOD_NAMES.split(","))
                 .allowedMethods("*")
                 .allowedHeaders("*")
-                .allowedOrigins("http://localhost:3000","")
-//                .allowedOrigins("*")
-                .exposedHeaders("*")
-                .allowCredentials(true);
+                .allowedOrigins("http://localhost:3000","https://clone-fe-three.vercel.app","https://clone-l9oboc2et-ericagong.vercel.app")
+//                .allowedOriginPatterns("*")
+                .exposedHeaders("authorization","Access-Token-Expire-Time","authentication");
+//                .allowCredentials(true);
     }
 }

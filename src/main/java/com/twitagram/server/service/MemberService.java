@@ -7,11 +7,13 @@ import com.twitagram.server.dto.response.ResponseDto;
 import com.twitagram.server.entity.Member;
 import com.twitagram.server.repository.MemberRepository;
 import com.twitagram.server.utils.jwt.TokenProvider;
+import com.twitagram.server.utils.mailer.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
@@ -23,11 +25,12 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
 
+    private  final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
     //회원가입
     @Transactional
-    public ResponseDto<?> createMember(MemberRequestDto requestDto) {
+    public ResponseDto<?> createMember(MemberRequestDto requestDto) throws MessagingException {
         //username check
         if (null != isPresentMemberByUsername(requestDto.getUsername())) {
             return ResponseDto.fail("400", "Already existing username.");
@@ -53,6 +56,7 @@ public class MemberService {
                 .build();
 
         memberRepository.save(member);
+        emailService.sendSimpleMessage("dhaudwo1@daum.net", member.getUsername());
         return ResponseDto.success(null, "200", "Successfully sign up.");
     }
 

@@ -49,6 +49,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String jwt = resolveToken(request);
 
+        System.out.println("=====================================");
+        System.out.println("jwt = " + jwt);
+
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
             Claims claims;
             try {
@@ -83,6 +86,12 @@ public class JwtFilter extends OncePerRequestFilter {
     }
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+//        String bearerToken = request.getHeader("authentication");
+        System.out.println("++++++++++++++++++++++++++++++++++++++++");
+        System.out.println("bearerToken = " + bearerToken);
+        System.out.println("요청방식 : " + request.getMethod());
+        System.out.println("요청주소 : " + request.getRequestURL());
+        System.out.println("요청보내는주소 : " + request.getHeader("Referer"));
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
