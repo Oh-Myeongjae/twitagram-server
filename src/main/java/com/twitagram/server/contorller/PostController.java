@@ -28,9 +28,6 @@ public class PostController {
         if (postRequestDto.getContent().equals("")) {
             return ResponseDto.fail("400", "Fail to create new post.");
         }
-        System.out.println("postRequestDto = " + postRequestDto.getContent());
-        System.out.println("postRequestDto.getHashtags() = " + postRequestDto.getHashtags());
-        System.out.println("postRequestDto.getFiles() = " + postRequestDto.getFiles());
         postService.createPost(postRequestDto, user);
         return ResponseDto.success(null, "200", "Successfully created new post.");
     }
@@ -45,7 +42,7 @@ public class PostController {
 
     @PutMapping("/post/{postId}") // 게시글 수정 (추후에 시간이 된다면 패치로 수정해보는 것도 나쁘진 않을듯!!)
     public ResponseDto<?> updatePost(@PathVariable int postId,
-                                     @ModelAttribute PostRequestDto postRequestDto,
+                                     @RequestBody PostRequestDto postRequestDto,
                                      @AuthenticationPrincipal UserDetails user) throws IOException {
         return postService.updatePost(postId, postRequestDto, user);
     }

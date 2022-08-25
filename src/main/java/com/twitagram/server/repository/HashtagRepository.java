@@ -14,6 +14,8 @@ public interface HashtagRepository extends JpaRepository<Hashtags, Integer> {
 //     Optional<Hashtags> findHashtagsByTags(String tag);
 //     List<Hashtags> findHashtagsByTags(String tag);
 
-     Page<Hashtags> findAllByTags(String tag, Pageable pageable);
+     void deleteAllByPost_Id(int Post_id);
+
+     Page<Hashtags> findAllByTagsAndPostNotNull(String tag, Pageable pageable);
 
 }

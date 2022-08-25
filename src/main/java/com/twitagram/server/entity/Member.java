@@ -26,10 +26,16 @@ public class Member {
     private String email;
 
     @Column(nullable = false)
+    private boolean emailCheck;
+
+    @Column(nullable = false)
     private String userprofile;
 
     public boolean validatePassword(PasswordEncoder passwordEncoder, String password) {
         return passwordEncoder.matches(password, this.password);
     }
 
+    public void update() {
+        this.emailCheck = true;
+    }
 }

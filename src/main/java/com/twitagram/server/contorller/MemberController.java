@@ -12,6 +12,7 @@ import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 
 
 @RequiredArgsConstructor
@@ -24,6 +25,13 @@ public class MemberController {
     @RequestMapping(value = "/api/signup", method = RequestMethod.POST)
     public ResponseDto<?> signup(@RequestBody @Valid MemberRequestDto requestDto) throws MessagingException {
         return memberService.createMember(requestDto);
+    }
+
+    @RequestMapping(value = "/api/email", method = RequestMethod.GET)
+    public ResponseDto<?> emailCheck(@RequestParam("username") String username,HttpServletResponse response) throws IOException {
+//        response.sendRedirect("http://localhost:8080/");
+        response.sendRedirect("https://sparta-omj.shop/");
+        return memberService.EmailCheck(username);
     }
 
     //로그인

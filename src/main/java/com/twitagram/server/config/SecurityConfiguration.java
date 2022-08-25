@@ -38,10 +38,17 @@ public class SecurityConfiguration {
     private final AccessDeniedHandlerException accessDeniedHandlerException;
     private static final String[] PERMIT_URL_ARRAY = {
             "/api/signup",
+            "/api/email",
+            "/",
             "/api/login",
-            "/h2-console/**",
+            "/api/posts",
+            "/api/post/**",
             "/api/comments/**",
-            "/"
+            "/api/hashtag/**",
+            "/api/hashtag",
+            "/api/profile/info/**",
+            "/h2-console/**"
+
     };
     @Bean
     public PasswordEncoder passwordEncoder() {

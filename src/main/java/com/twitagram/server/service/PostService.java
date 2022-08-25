@@ -135,14 +135,29 @@ public class PostService {
     @Transactional
     public ResponseDto<?> updatePost(int postId, PostRequestDto postRequestDto, UserDetails user) throws IOException {
         Optional<Member> member = memberRepository.findByUsername(user.getUsername());
+        hashtagRepository.deleteAllByPost_Id(postId);
         Optional<Post> optionalPost =  postRepository.findById(postId);
 
         if(optionalPost.isEmpty()){
             return ResponseDto.fail("에러코드~~","존재하지 않는 게시글");
         }
-        Post post = optionalPost.get();
 
-        post.update(postRequestDto,member.get());
+        Post post = optionalPost.get();
+        List<String> tags = postRequestDto.getHashtags();
+
+        if(tags != null){
+            for(String tag : tags){
+                hashtagRepository.save(
+                        Hashtags.builder()
+                                .tags(tag)
+                                .post(post)
+                                .build()
+                );
+            }
+        }
+
+//        post.update(postRequestDto,member.get());
+        post.update(postRequestDto);
 
         List<Image> imageList = imageRepository.findAllByPost_Id(post.getId());
         List<Hashtags>  hashtagsList = hashtagRepository.findAllByPost_Id(post.getId());
